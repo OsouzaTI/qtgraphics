@@ -80,8 +80,9 @@ void Painter::addPaintBufferCallback(PaintBufferCallback pbc) {
 }
 
 void Painter::floodFill(int x, int y, QColor color, QColor nColor) {
-    
-    if(x > width() || y > height() || x < 0 || y < 0) return;
+    // usado para verificar se a figura esta "furada", causando stack overflow de recursoes
+    int offset = 200;
+    if(x < offset || x >= width() - offset || y < offset || y >= height() - offset) return;
 
     // calculando posição do pixel
     QColor pixel = pixelAt(x, y);

@@ -23,7 +23,7 @@ QColor circuloImplicito(PixelAround p, int x, int y) {
     float f1 = (x*x) - 2*x*cx + (cx*cx);
     float f2 = (y*y) - 2*y*cy + (cy*cy);
 
-    if( (f1+f2) < (r*r) && (f1+f2) > (r*r)-128 ) {        
+    if( (f1+f2) < (r*r) && (f1+f2) > (r*r)-12 ) {        
         return primaryColor;
     } else {
         return backgroundColor;

@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <math/helpers.h>
+#include <helpers/pixels.h>
 
 int PW = 640;
 int PH = 480;
@@ -34,13 +35,9 @@ QColor circuloImplicito(PixelAround p, int x, int y) {
 void telaVermelha(uchar* pixels, int width, int height) {
     
     for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-            int pixel = (x + y * width) * 4;
+        for (int y = 0; y < height; y++) {            
             QColor color = QColor(255, 0, 0);
-            pixels[pixel + 0] = color.red();
-            pixels[pixel + 1] = color.green();
-            pixels[pixel + 2] = color.blue();
-            pixels[pixel + 3] = color.alpha();
+            Pixels::setPixel(pixels, x, y, width, color);
         }
     }
 
@@ -69,15 +66,7 @@ int main(int argc, char** argv) {
     QTGEWindow window(860, 480);
 
     Painter* p = window.getPainter();
-    // rasterizando o circulo
-    p->addPaintCallback(circuloImplicito);
-    // executando uma leitura dos pixels    
-    p->addPaintBufferCallback([p](uchar* pixels, int w, int h) {        
-        // famoso centro do circulo
-        QPoint pixelSeed(PW / 2, PH / 2);
-        p->floodFill(pixelSeed.x(), pixelSeed.y(), QColor(0, 0, 0), QColor(255, 0, 0));
-    });
-
+    
     window.show();
     return app.exec();
 }

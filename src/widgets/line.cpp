@@ -2,8 +2,7 @@
 
 QTGELine::QTGELine(QWidget* parent)
     : QWidget(parent), x0(0), y0(0), x1(0), y1(0)
-{
-    setStyleSheet("background-color: #3c3c3c;");    
+{  
     gridLayout = new QGridLayout(this);
 
     btFinish = new QPushButton("Rasterizar");
@@ -21,6 +20,7 @@ QTGELine::QTGELine(QWidget* parent)
     boxAlgoritms = new QVBoxLayout();
     // radio buttons de algoritmos
     algorithm0 = new QRadioButton("Brenseham");
+    algorithm0->setChecked(true);
     algorithm1 = new QRadioButton("DDA");
     algorithm2 = new QRadioButton("Analirico");
     boxAlgoritms->addWidget(lbAlgorithms);
@@ -44,6 +44,9 @@ QTGELine::QTGELine(QWidget* parent)
     gridLayout->addWidget(btFinish, 4, 0, 1, 3, Qt::AlignRight);
 
     connect(btFinish, &QPushButton::clicked, this, &QTGELine::setPoints);
+    connect(algorithm0, &QRadioButton::clicked, this, &QTGELine::setBrenseham);
+    connect(algorithm1, &QRadioButton::clicked, this, &QTGELine::setDDA);
+    connect(algorithm2, &QRadioButton::clicked, this, &QTGELine::setAnalytic);
 
     show();
 }
@@ -53,25 +56,85 @@ QTGELine::~QTGELine()
 
 }
 
-QColor QTGELine::analitica(int x, int y) {
-
-    // para determinar a equação geral da reta podemos:
-    if((x0 - x1) == 0) return QColor(0, 0, 0);
+void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, int x1, int y1, QColor color) {
 
     float m = (y0 - y1)/(x0 - x1);
-    bool equacao = (m * (x0 - x) - y0 + y) == 0;
-    return equacao ? QTGEWindow::colors[1] : QTGEWindow::colors[0];
+    
+    for(int x = 0; x < width; x++) {
+        for(int y = 0; y < height; y++) {
+
+            bool equacao = (m * (x0 - x) - y0 + y) == 0;
+            if(equacao) Pixels::setPixel(pixels, x, y, width, color);
+
+        }
+    }
+    
+
+}
+
+void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color) {
+
+    // calculando os respectivos deltas
+    int deltaX = (x1 - x0);
+    int deltaY = (y1 - y0);
+
+    // obtendo o maior delta e salvando-o
+    int sideLength = (abs(deltaX) >= abs(deltaY)) ? abs(deltaX) : abs(deltaY);
+
+    // definindo a taxa de incremento dos eixos
+    float incrementX = deltaX / static_cast<float>(sideLength);
+    float incrementY = deltaY / static_cast<float>(sideLength);
+
+    // valor atual dos incrementos
+    float currentX = x0;
+    float currentY = y0;
+
+    for(int i = 0; i < sideLength; i++) {
+        int x = static_cast<int>(currentX);
+        int y = static_cast<int>(currentY);        
+        // definindo o pixel
+        Pixels::setPixel(pixels, x, y, width, color);        
+        currentX += incrementX;
+        currentY += incrementY;
+    }
+
+}
+
+void QTGELine::setAlgoritm(int algorithm) {
+    std::cout << "Algoritmo " << algorithm << " foi selecionado." << std::endl;
+    // seta o algoritmo
+    this->algorithm = algorithm;
+
+    // limpa a lista de callbacks do painter
+    painter->clearPaintBufferCallbacks();
+    // adiciona o novo algoritmo na lista
+    painter->addPaintBufferCallback([this, algorithm](uchar* pixels, int width, int height){
+        
+        switch (algorithm)
+        {
+            case 0: {
+                // brenseham
+            } break;            
+            case 1: {
+                // DDA
+                digitalDifferentialAnalyzer(pixels, width, x0, y0, x1, y1, QColor(255, 0, 0));
+            } break;
+            case 2: {  
+                analitica(pixels, width, height, x0, y0, x1, y1, QColor(255, 0, 0));
+            } break;
+            default:{
+                // brenseham
+            }break;
+        }
+    
+    });
 
 }
 
 void QTGELine::setPainter(Painter* painter) {
-
     this->painter = painter;
-
-    painter->addPaintCallback([this](PixelAround p, int x, int y){
-        return analitica(x, y);
-    });
-
+    // padrao: brenseham
+    setAlgoritm(0);
 }
 
 void QTGELine::setPoints() {

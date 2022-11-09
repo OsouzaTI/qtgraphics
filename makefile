@@ -8,6 +8,7 @@ build:
 	src/widgets/*.h \
 	src/widgets/*.cpp \
 	src/math/*.h \
+	src/helpers/*.h \
 	-I. \
 	-I./src \
 	-I/usr/include/x86_64-linux-gnu/qt5/QtWidgets \

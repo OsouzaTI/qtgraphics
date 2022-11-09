@@ -6,18 +6,17 @@ Painter::Painter(int width, int height, QWidget *parent)
     // setando tamanho fixo
     setFixedSize(size);
     // calculo de bytes
-    bytes = width * height * sizeof(uint32_t);
-}
-
-void Painter::paintEvent(QPaintEvent*) {
+    bytes = width * height * sizeof(uint32_t);    
     // inicializando buffer
     pixels = new uchar[bytes];
+}
 
+void Painter::paintEvent(QPaintEvent* event) {
+    
     if(!paintCallbacks.empty()) { 
 
         for (int x = 0; x < width(); x++) {
             for (int y = 0; y < height(); y++) {
-
                 int pixel = (x + y * width()) * 4;
                 for(PaintCallback paintCallback : paintCallbacks) {
                     QColor color = paintCallback(pixelAround(x, y), x, y);
@@ -38,10 +37,12 @@ void Painter::paintEvent(QPaintEvent*) {
         }
     }
 
-    QImage image(pixels, width(), height(), QImage::Format_RGBX8888);
-    QPainter painter(this);
+    // cria a imagem
+    QImage image(pixels, width(), height(), QImage::Format_RGBX8888);    
+    // adiciona a imagem no QPainter
+    QPainter painter(this);    
     painter.drawImage(0, 0, image);
-    delete[] pixels;
+    clearBuffer();
 }
 
 PixelAround Painter::pixelAround(int x, int y) {    
@@ -69,6 +70,18 @@ void Painter::setPixel(int x, int y, QColor color) {
         pixels[pixel+2] = color.blue();
         pixels[pixel+3] = color.alpha();
     }
+}
+
+void Painter::clearBuffer() {
+    std::fill_n(pixels, bytes, 0);
+}
+
+void Painter::clearPaintCallbacks() {
+    paintCallbacks.clear();
+}
+
+void Painter::clearPaintBufferCallbacks() {
+    paintBufferCallbacks.clear();
 }
 
 void Painter::addPaintCallback(PaintCallback pcb) {

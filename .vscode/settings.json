@@ -55,6 +55,7 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "qdialog": "cpp"
+        "qdialog": "cpp",
+        "qtwidgets": "cpp"
     }
 }

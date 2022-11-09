@@ -6,7 +6,6 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     : QWidget(parent), size(QSize(width, height))
 {       
     setFixedSize(size);
-    setStyleSheet("background-color: #222222");
 
     // painter
     painter = new Painter(640, 480);

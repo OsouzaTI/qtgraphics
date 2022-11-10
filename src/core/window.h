@@ -44,12 +44,17 @@ public:
     static Rgb colors[2];
     explicit QTGEWindow(int width, int height, QWidget *parent = 0);
     void resizeEvent(QResizeEvent* event);
+    void keyPressEvent(QKeyEvent *event) override;
     inline Painter* getPainter(){ return painter; };
     void setBackgroundColor(const QColor& color);
     void setPrimaryColor(const QColor& color);
 
     // update painter
     inline void updatePainter(){ this->painter->update(); }
+
+public slots:
+    void scaleIn();
+    void scaleOut();
 };
 
 

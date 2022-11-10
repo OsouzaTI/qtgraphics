@@ -42,9 +42,10 @@ class QTGELine : public QWidget
         // painter
         Painter* painter;
 
+        void infoPoints();
+
         // algoritmo selecionado
         int algorithm = 0; // padrao: Brenseham
-
         void setAlgoritm(int algorithm);
     public:
         QTGELine(QWidget* parent = 0);
@@ -58,7 +59,7 @@ class QTGELine : public QWidget
         void digitalDifferentialAnalyzer(uchar* pixels, int width,  int x0, int y0, int x1, int y1, QColor color);
         // void rasterizar();
         void setPainter(Painter* painter);
-        
+
     public slots:
         void setPoints();
         // callbacks dos radiobuttons

@@ -1,7 +1,7 @@
 #include "painter.h"
 
 Painter::Painter(int width, int height, QWidget *parent) 
-    : QWidget(parent), size(QSize(width, height)) 
+    : scale(1), QWidget(parent), size(QSize(width, height)) 
 {   
     // setando tamanho fixo
     setFixedSize(size);
@@ -39,9 +39,10 @@ void Painter::paintEvent(QPaintEvent* event) {
 
     // cria a imagem
     QImage image(pixels, width(), height(), QImage::Format_RGBX8888);    
+    QImage scaledImage = image.scaled(QSize(width() * scale, height() * scale));
     // adiciona a imagem no QPainter
     QPainter painter(this);    
-    painter.drawImage(0, 0, image);
+    painter.drawImage(0, 0, scaledImage);
     clearBuffer();
 }
 
@@ -107,4 +108,10 @@ void Painter::floodFill(int x, int y, QColor color, QColor nColor) {
         floodFill(x, y + 1, color, nColor);
     }
 
+}
+
+void Painter::setScale(float scale) {
+    int _scale = scale > 0 ? scale : 1;
+    this->scale = _scale;
+    update();
 }

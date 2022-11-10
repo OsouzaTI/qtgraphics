@@ -25,6 +25,7 @@ typedef std::function<void(uchar* buffer, int width, int height)> PaintBufferCal
 class Painter : public QWidget
 {
     private:
+        int scale;
         int bytes;
         QSize size;        
         std::vector<PaintCallback> paintCallbacks;
@@ -42,6 +43,9 @@ class Painter : public QWidget
         void clearBuffer();
         void clearPaintBufferCallbacks();
         void clearPaintCallbacks();
+
+        inline int getScale() { return scale; }
+        void setScale(float scale);
 };
 
 

@@ -68,3 +68,20 @@ void QTGEWindow::setPrimaryColor(const QColor& color)
 void QTGEWindow::resizeEvent(QResizeEvent* event) {
 
 }
+
+void QTGEWindow::keyPressEvent(QKeyEvent *event) {
+    switch (event->key())
+    {
+        case Qt::Key_Up: emit scaleIn(); break;
+        case Qt::Key_Down: emit scaleOut(); break;
+        default: break; 
+    }
+}
+
+void QTGEWindow::scaleIn() {
+    painter->setScale(painter->getScale()+1);
+}
+
+void QTGEWindow::scaleOut() {
+    painter->setScale(painter->getScale()-1);
+}

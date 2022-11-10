@@ -57,13 +57,19 @@ QTGELine::~QTGELine()
 }
 
 void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, int x1, int y1, QColor color) {
-
-    float m = (y0 - y1)/(x0 - x1);
     
-    for(int x = 0; x < width; x++) {
-        for(int y = 0; y < height; y++) {
+    // trocas para manter os pontos em ordem de menor para maior
+    int _x0 = x0 > x1 ? x1 : x0;
+    int _y0 = y0 > y1 ? y1 : y0;
+    int _x1 = x0 > x1 ? x0 : x1;
+    int _y1 = y0 > y1 ? y0 : y1;
 
-            bool equacao = (m * (x0 - x) - y0 + y) == 0;
+    float m = (_y0 - _y1)/(_x0 - _x1);
+
+    for(int x = _x0; x < _x1; x++) {
+        for(int y = _y0; y < _y1; y++) {
+
+            bool equacao = (m * (_x0 - x) - _y0 + y) == 0;
             if(equacao) Pixels::setPixel(pixels, x, y, width, color);
 
         }
@@ -98,6 +104,10 @@ void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int
         currentY += incrementY;
     }
 
+}
+
+void QTGELine::infoPoints() {
+    std::cout << "A("<<x0<<","<<y0<<") " << "B("<<x1<<","<<y1<< ")" << std::endl;
 }
 
 void QTGELine::setAlgoritm(int algorithm) {
@@ -138,8 +148,7 @@ void QTGELine::setPainter(Painter* painter) {
 }
 
 void QTGELine::setPoints() {
-    std::cout << "Point A: " << tx0->text().toStdString() <<","<< ty0->text().toStdString() << std::endl;
-    std::cout << "Point B: " << tx1->text().toStdString() <<","<< ty1->text().toStdString() << std::endl;
+    infoPoints();
     x0 = tx0->text().toInt();
     y0 = ty0->text().toInt();
     x1 = tx1->text().toInt();

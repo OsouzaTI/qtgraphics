@@ -1,10 +1,11 @@
 #include "line.h"
 
 QTGELine::QTGELine(QWidget* parent)
-    : QWidget(parent), x0(0), y0(0), x1(0), y1(0)
+    : QWidget(parent)
 {  
     gridLayout = new QGridLayout(this);
 
+    btClearLines = new QPushButton("Clear lines");
     btFinish = new QPushButton("Rasterizar");
 
     lpointA = new QLabel("Point A:");
@@ -22,7 +23,7 @@ QTGELine::QTGELine(QWidget* parent)
     algorithm0 = new QRadioButton("Brenseham");
     algorithm0->setChecked(true);
     algorithm1 = new QRadioButton("DDA");
-    algorithm2 = new QRadioButton("Analirico");
+    algorithm2 = new QRadioButton("Analitico");
     boxAlgoritms->addWidget(lbAlgorithms);
     boxAlgoritms->addWidget(algorithm0);
     boxAlgoritms->addWidget(algorithm1);
@@ -41,9 +42,11 @@ QTGELine::QTGELine(QWidget* parent)
 
     gridLayout->addLayout(boxAlgoritms, 3, 0, 1, 3, Qt::AlignCenter);
 
-    gridLayout->addWidget(btFinish, 4, 0, 1, 3, Qt::AlignRight);
+    gridLayout->addWidget(btFinish,     4, 0, 1, 2);
+    gridLayout->addWidget(btClearLines, 4, 2);
 
-    connect(btFinish, &QPushButton::clicked, this, &QTGELine::setPoints);
+    connect(btFinish, &QPushButton::clicked, this, &QTGELine::addLineGUI);
+    connect(btClearLines, &QPushButton::clicked, this, &QTGELine::clearLines);
     connect(algorithm0, &QRadioButton::clicked, this, &QTGELine::setBrenseham);
     connect(algorithm1, &QRadioButton::clicked, this, &QTGELine::setDDA);
     connect(algorithm2, &QRadioButton::clicked, this, &QTGELine::setAnalytic);
@@ -63,14 +66,17 @@ void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, i
     int _y0 = y0 > y1 ? y1 : y0;
     int _x1 = x0 > x1 ? x0 : x1;
     int _y1 = y0 > y1 ? y0 : y1;
-
+    
     float m = (_y0 - _y1)/(_x0 - _x1);
 
     for(int x = _x0; x < _x1; x++) {
         for(int y = _y0; y < _y1; y++) {
 
             bool equacao = (m * (_x0 - x) - _y0 + y) == 0;
-            if(equacao) Pixels::setPixel(pixels, x, y, width, color);
+            // proteção contra segmentation fault
+            if(x >= 0 && x <= width && y >= 0 && y <= height) {
+                if(equacao) Pixels::setPixel(pixels, x, y, width, color);
+            }
 
         }
     }
@@ -107,7 +113,9 @@ void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int
 }
 
 void QTGELine::infoPoints() {
-    std::cout << "A("<<x0<<","<<y0<<") " << "B("<<x1<<","<<y1<< ")" << std::endl;
+    for(Line l : lines) {
+        std::cout << "A("<<l.x0<<","<<l.y0<<") " << "B("<<l.x1<<","<<l.y1<< ")" << std::endl;
+    }
 }
 
 void QTGELine::setAlgoritm(int algorithm) {
@@ -120,23 +128,33 @@ void QTGELine::setAlgoritm(int algorithm) {
     // adiciona o novo algoritmo na lista
     painter->addPaintBufferCallback([this, algorithm](uchar* pixels, int width, int height){
         
-        switch (algorithm)
-        {
-            case 0: {
-                // brenseham
-            } break;            
-            case 1: {
-                // DDA
-                digitalDifferentialAnalyzer(pixels, width, x0, y0, x1, y1, QColor(255, 0, 0));
-            } break;
-            case 2: {  
-                analitica(pixels, width, height, x0, y0, x1, y1, QColor(255, 0, 0));
-            } break;
-            default:{
-                // brenseham
-            }break;
-        }
+        // cada linha adicionada no vetor de linhas
+        for(Line l : lines) {
+
+            int x0 = l.x0,
+                y0 = l.y0,
+                x1 = l.x1,
+                y1 = l.y1;
+
+            switch (algorithm)
+            {
+                case 0: {
+                    // brenseham
+                } break;            
+                case 1: {
+                    // DDA
+                    digitalDifferentialAnalyzer(pixels, width, x0, y0, x1, y1, QColor(255, 0, 0));
+                } break;
+                case 2: {  
+                    analitica(pixels, width, height, x0, y0, x1, y1, QColor(255, 0, 0));
+                } break;
+                default:{
+                    // brenseham
+                }break;
+            }
     
+        }
+
     });
 
 }
@@ -147,11 +165,21 @@ void QTGELine::setPainter(Painter* painter) {
     setAlgoritm(0);
 }
 
-void QTGELine::setPoints() {
-    infoPoints();
+void QTGELine::addLine(Line line) {
+    lines.push_back(line);
+    painter->update();
+}
+
+void QTGELine::addLineGUI() {
+    int x0, y0, x1, y1;
     x0 = tx0->text().toInt();
     y0 = ty0->text().toInt();
     x1 = tx1->text().toInt();
     y1 = ty1->text().toInt();
+    lines.push_back(Line(x0, y0, x1, y1));
     painter->update();
+}
+
+void QTGELine::clearLines() {
+    lines.clear();
 }

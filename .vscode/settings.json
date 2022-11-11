@@ -58,6 +58,7 @@
         "qdialog": "cpp",
         "qtwidgets": "cpp",
         "future": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "qfiledialog": "cpp"
     }
 }

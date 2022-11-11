@@ -11,18 +11,27 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <core/painter.h>
-#include <core/window.h>
 #include <helpers/pixels.h>
+
+struct Line
+{
+    int x0, y0, x1, y1;
+    Line(int x0, int y0, int x1, int y1): x0(x0), y0(y0), x1(x1), y1(y1) {};
+    static Line fromQPoints(QPoint a, QPoint b) {        
+        return Line(a.x(), a.y(), b.x(), b.y());
+    }
+};
+
 
 class QTGELine : public QWidget
 {
-    private:
-        int x0, y0;
-        int x1, y1;
+    private:       
+        std::vector<Line> lines;
 
     private:
         QGridLayout* gridLayout;
         QPushButton* btFinish;
+        QPushButton* btClearLines;
         
         QLabel* lbAlgorithms;
         QVBoxLayout* boxAlgoritms;
@@ -60,8 +69,11 @@ class QTGELine : public QWidget
         // void rasterizar();
         void setPainter(Painter* painter);
 
+        void addLine(Line line);
+
     public slots:
-        void setPoints();
+        void addLineGUI();
+        void clearLines();
         // callbacks dos radiobuttons
         inline void setBrenseham()  { setAlgoritm(0); };
         inline void setDDA()        { setAlgoritm(1); };

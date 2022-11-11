@@ -11,8 +11,11 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     painter = new Painter(640, 480);
 
     // componentes de tela
-    line = new QTGELine(this);
+    line = new QTGELine();
     line->setPainter(painter);
+
+    polygon = new QTGEPolygon(line);
+    polygon->setPainter(painter);
 
     // layout
     layout = new QHBoxLayout(this);
@@ -46,6 +49,7 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     vbox2->addWidget(selectBackgroundColor);
     vbox2->addWidget(selectPrimaryColor);
     vbox2->addWidget(line);
+    vbox2->addWidget(polygon);
 
 
     QTGEWindow::colors[0].changeColor(0, 0, 0);

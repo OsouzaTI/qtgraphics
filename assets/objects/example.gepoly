@@ -1,0 +1,8 @@
+Exemplo de como usar o arquivo qtge
+
+BGCOLOR 255 0 0 255                             DETERMINA A COR DE FUNDO
+FGCOLOR 255 255 255 255                         DETERMINA A COR DE RASTERIZACAO
+V 10 10                                         DETERMINA A COORDENADA DO VERTICE
+V 10 30
+V 30 30
+V 30 10

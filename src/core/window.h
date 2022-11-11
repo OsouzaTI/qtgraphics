@@ -1,6 +1,7 @@
 #ifndef QTGE_WINDOW_H
 #define QTGE_WINDOW_H
 
+#include <iostream>
 #include <QWidget>
 #include <QApplication>
 #include <QMainWindow>
@@ -9,7 +10,7 @@
 #include <QVBoxLayout>
 #include <widgets/select_color_button.h>
 #include <widgets/line.h>
-#include <iostream>
+#include <widgets/polygon.h>
 #include "painter.h"
 #include "rgb.h"
 
@@ -37,6 +38,7 @@ private:
     
     // widgets
     QTGELine* line;
+    QTGEPolygon* polygon;
 
 
 public:

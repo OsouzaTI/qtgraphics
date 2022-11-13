@@ -67,16 +67,13 @@ void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, i
     int _x1 = x0 > x1 ? x0 : x1;
     int _y1 = y0 > y1 ? y0 : y1;
     
-    float m = (_y0 - _y1)/(_x0 - _x1);
-
+    float m = (_y0 - _y1)/static_cast<float>(_x0 - _x1);
+    
     for(int x = _x0; x < _x1; x++) {
         for(int y = _y0; y < _y1; y++) {
 
             bool equacao = (m * (_x0 - x) - _y0 + y) == 0;
-            // proteção contra segmentation fault
-            if(x >= 0 && x <= width && y >= 0 && y <= height) {
-                if(equacao) Pixels::setPixel(pixels, x, y, width, color);
-            }
+            if(equacao) Pixels::setPixel(pixels, x, y, width, color);
 
         }
     }
@@ -182,4 +179,5 @@ void QTGELine::addLineGUI() {
 
 void QTGELine::clearLines() {
     lines.clear();
+    painter->update();
 }

@@ -32,7 +32,9 @@ void QTGEPolygon::render() {
 }
 
 void QTGEPolygon::readFile(FILE* file) {
-    
+    // limpa a lista atual de vertices adicionados
+    vertices.clear();
+
     QStringList listString;
     int index = 0;
     while (1) {
@@ -61,11 +63,14 @@ void QTGEPolygon::readFile(FILE* file) {
 
     // passando os dados lidos para o rasterizador de linhas
     int vSize = vertices.size();
-    for(int i = 0; i < vSize; i++) {        
+    for(int i = 0; i < vSize - 1; i++) {        
         QPoint A = vertices[i];
-        QPoint B = vertices[(i+1) % vSize];
+        QPoint B = vertices[i+1];        
         line->addLine(Line::fromQPoints(A, B));
     }
+
+    // fechando a figura automaticamente
+    line->addLine(Line::fromQPoints(vertices.back(), vertices.front()));
 
 }
 

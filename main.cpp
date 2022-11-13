@@ -63,7 +63,7 @@ void floodFill(uchar* pixels, int width, int height, int x, int y) {
 
 int main(int argc, char** argv) {
     QApplication app (argc, argv);
-    QTGEWindow window(860, 480);
+    QTGEWindow window(890, 480);
 
     Painter* p = window.getPainter();
     

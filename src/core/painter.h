@@ -12,6 +12,8 @@
 #include <functional>
 #include <helpers/pixels.h>
 
+#include <unistd.h>
+
 typedef struct {
     QColor above;
     QColor down;
@@ -27,7 +29,8 @@ class Painter : public QWidget
     private:
         int scale;
         int bytes;
-        QSize size;        
+        QSize size;         // tamanho da janela de visualizacao
+        QSize imageSize;    // tamanho da imagem (influencia na quantidade de pixels)
         std::vector<PaintCallback> paintCallbacks;
         std::vector<PaintBufferCallback> paintBufferCallbacks;
         uchar* pixels;
@@ -43,6 +46,9 @@ class Painter : public QWidget
         void clearBuffer();
         void clearPaintBufferCallbacks();
         void clearPaintCallbacks();
+
+        inline int imgWidth() const { return imageSize.width(); };
+        inline int imgHeight() const { return imageSize.height(); };
 
         inline int getScale() { return scale; }
         void setScale(float scale);

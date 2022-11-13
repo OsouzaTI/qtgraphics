@@ -22,6 +22,8 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     layout->setSpacing(0);
     layout->setMargin(0);
     
+    hbPreenchimento = new QHBoxLayout();
+
     // vbox1
     vbox1 = new QVBoxLayout();
     vbox2 = new QVBoxLayout();
@@ -44,16 +46,28 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
         this->setPrimaryColor(color);
     });
 
+    pixelSeedX = new QLineEdit();
+    pixelSeedY = new QLineEdit();
+    btFloodFill = new QPushButton("Flood Fill");
+    btScanLine = new QPushButton("Scan Line");
+    hbPreenchimento->addWidget(pixelSeedX);
+    hbPreenchimento->addWidget(pixelSeedY);
+    hbPreenchimento->addWidget(btFloodFill);
+
     // adicionando elementos
     vbox1->addWidget(painter);
     vbox2->addWidget(selectBackgroundColor);
     vbox2->addWidget(selectPrimaryColor);
     vbox2->addWidget(line);
+    vbox2->addLayout(hbPreenchimento);
     vbox2->addWidget(polygon);
 
 
     QTGEWindow::colors[0].changeColor(0, 0, 0);
     QTGEWindow::colors[1].changeColor(255, 255, 255);
+
+    // conectando
+    connect(btFloodFill, &QPushButton::clicked, this, &QTGEWindow::floodFill);
 
 }
 
@@ -88,4 +102,12 @@ void QTGEWindow::scaleIn() {
 
 void QTGEWindow::scaleOut() {
     painter->setScale(painter->getScale()-1);
+}
+
+void QTGEWindow::floodFill() {
+    int x = pixelSeedX->text().toInt();
+    int y = pixelSeedY->text().toInt();
+    std::cout << "Flood fill pixelSeed(" << x << "," << y << ")" << std::endl;
+    painter->floodFill(x, y, QColor(0, 0, 0), QColor(255, 0, 0));
+    painter->update();
 }

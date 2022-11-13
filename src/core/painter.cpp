@@ -1,12 +1,12 @@
 #include "painter.h"
 
 Painter::Painter(int width, int height, QWidget *parent) 
-    : scale(1), QWidget(parent), size(QSize(width, height)) 
+    : scale(1), QWidget(parent), size(QSize(width, height)), imageSize(QSize(160, 120))
 {   
     // setando tamanho fixo
     setFixedSize(size);
     // calculo de bytes
-    bytes = width * height * sizeof(uint32_t);    
+    bytes = imgWidth() * imgHeight() * sizeof(uint32_t);    
     // inicializando buffer
     pixels = new uchar[bytes];
 }
@@ -15,17 +15,12 @@ void Painter::paintEvent(QPaintEvent* event) {
     
     if(!paintCallbacks.empty()) { 
 
-        for (int x = 0; x < width(); x++) {
-            for (int y = 0; y < height(); y++) {
-                int pixel = (x + y * width()) * 4;
+        for (int x = 0; x < imgWidth(); x++) {
+            for (int y = 0; y < imgHeight(); y++) {                
                 for(PaintCallback paintCallback : paintCallbacks) {
                     QColor color = paintCallback(pixelAround(x, y), x, y);
-                    pixels[pixel + 0] = color.red();
-                    pixels[pixel + 1] = color.green();
-                    pixels[pixel + 2] = color.blue();
-                    pixels[pixel + 3] = color.alpha();
+                    setPixel(x, y, color);
                 }
-
             }
         }
 
@@ -33,16 +28,17 @@ void Painter::paintEvent(QPaintEvent* event) {
     
     if (!paintBufferCallbacks.empty()) {
         for(PaintBufferCallback paintBufferCallback : paintBufferCallbacks) {
-            paintBufferCallback(pixels, width(), height());
+            paintBufferCallback(pixels, imgWidth(), imgHeight());
         }
     }
 
     // cria a imagem
-    QImage image(pixels, width(), height(), QImage::Format_RGBX8888);    
-    QImage scaledImage = image.scaled(QSize(width() * scale, height() * scale));
+    QImage image(pixels, imgWidth(), imgHeight(), QImage::Format_RGBX8888);
+    QImage scaledImage = image.scaled(size);
     // adiciona a imagem no QPainter
     QPainter painter(this);    
     painter.drawImage(0, 0, scaledImage);
+    // necessita ser desativado para usar algoritmos de preenchimento (ou limpar buffer via tela)
     clearBuffer();
 }
 
@@ -56,16 +52,16 @@ PixelAround Painter::pixelAround(int x, int y) {
 }
 
 QColor Painter::pixelAt(int x, int y) {
-    if(x >= 0 && x <= width() && y >= 0 && y <= height()) {
-        int pixel = (x + y * width()) * 4;
-        return QColor(pixels[pixel+0], pixels[pixel+1], pixels[pixel+2], pixels[pixel+3]);
+    if(x >= 0 && x <= imgWidth() && y >= 0 && y <= imgHeight()) {
+        int pixel = (x + y * imgWidth()) * 4;
+        return QColor(pixels[pixel+0], pixels[pixel+1], pixels[pixel+2]);
     }
     return QColor(0, 0, 0);
 }
 
 void Painter::setPixel(int x, int y, QColor color) {
-    if(x >= 0 && x <= width() && y >= 0 && y <= height()) {
-        int pixel = (x + y * width()) * 4;
+    if(x >= 0 && x <= imgWidth() && y >= 0 && y <= imgHeight()) {
+        int pixel = (x + y * imgWidth()) * 4;
         pixels[pixel+0] = color.red();
         pixels[pixel+1] = color.green();
         pixels[pixel+2] = color.blue();
@@ -95,8 +91,7 @@ void Painter::addPaintBufferCallback(PaintBufferCallback pbc) {
 
 void Painter::floodFill(int x, int y, QColor color, QColor nColor) {
     // usado para verificar se a figura esta "furada", causando stack overflow de recursoes
-    int offset = 200;
-    if(x < offset || x >= width() - offset || y < offset || y >= height() - offset) return;
+    if(x < 0 || x >= imgWidth() || y < 0 || y >= imgHeight()) return;
 
     // calculando posição do pixel
     QColor pixel = pixelAt(x, y);
@@ -107,7 +102,7 @@ void Painter::floodFill(int x, int y, QColor color, QColor nColor) {
         floodFill(x, y - 1, color, nColor);
         floodFill(x, y + 1, color, nColor);
     }
-
+    
 }
 
 void Painter::setScale(float scale) {

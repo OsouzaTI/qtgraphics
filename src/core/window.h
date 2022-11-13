@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QLineEdit>
 #include <widgets/select_color_button.h>
 #include <widgets/line.h>
 #include <widgets/polygon.h>
@@ -23,6 +24,9 @@ private:
 
     // layout dividido em duas partes lado a lado
     QHBoxLayout* layout;
+
+    // algoritmos de preenchimento
+    QHBoxLayout* hbPreenchimento;
     
     // lado 1
     QVBoxLayout* vbox1;
@@ -33,6 +37,11 @@ private:
     QPushButton* color;
     SelectColorButton* selectBackgroundColor;
     SelectColorButton* selectPrimaryColor;
+
+    QLineEdit* pixelSeedX;
+    QLineEdit* pixelSeedY;
+    QPushButton* btFloodFill;
+    QPushButton* btScanLine;
 
     QSize size;
     
@@ -57,6 +66,9 @@ public:
 public slots:
     void scaleIn();
     void scaleOut();
+
+    void floodFill();
+
 };
 
 

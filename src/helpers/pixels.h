@@ -1,6 +1,7 @@
 #ifndef PIXELS_H
 #define PIXELS_H
 
+#include <iostream>
 #include <QtWidgets>
 
 namespace Pixels {

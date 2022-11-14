@@ -53,6 +53,8 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     hbPreenchimento->addWidget(pixelSeedX);
     hbPreenchimento->addWidget(pixelSeedY);
     hbPreenchimento->addWidget(btFloodFill);
+    hbPreenchimento->setSpacing(4);
+    hbPreenchimento->setMargin(10);
 
     // adicionando elementos
     vbox1->addWidget(painter);
@@ -90,18 +92,8 @@ void QTGEWindow::resizeEvent(QResizeEvent* event) {
 void QTGEWindow::keyPressEvent(QKeyEvent *event) {
     switch (event->key())
     {
-        case Qt::Key_Up: emit scaleIn(); break;
-        case Qt::Key_Down: emit scaleOut(); break;
         default: break; 
     }
-}
-
-void QTGEWindow::scaleIn() {
-    painter->setScale(painter->getScale()+1);
-}
-
-void QTGEWindow::scaleOut() {
-    painter->setScale(painter->getScale()-1);
 }
 
 void QTGEWindow::floodFill() {

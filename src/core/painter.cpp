@@ -1,7 +1,7 @@
 #include "painter.h"
 
 Painter::Painter(int width, int height, QWidget *parent) 
-    : scale(1), QWidget(parent), size(QSize(width, height)), imageSize(QSize(160, 120))
+    : QWidget(parent), size(QSize(width, height)), imageSize(QSize(160, 120))
 {   
     // setando tamanho fixo
     setFixedSize(size);
@@ -9,6 +9,8 @@ Painter::Painter(int width, int height, QWidget *parent)
     bytes = imgWidth() * imgHeight() * sizeof(uint32_t);    
     // inicializando buffer
     pixels = new uchar[bytes];
+    // inicializando buffer
+    clearBuffer();
 }
 
 void Painter::paintEvent(QPaintEvent* event) {
@@ -39,7 +41,7 @@ void Painter::paintEvent(QPaintEvent* event) {
     QPainter painter(this);    
     painter.drawImage(0, 0, scaledImage);
     // necessita ser desativado para usar algoritmos de preenchimento (ou limpar buffer via tela)
-    clearBuffer();
+    // clearBuffer();
 }
 
 PixelAround Painter::pixelAround(int x, int y) {    
@@ -73,6 +75,20 @@ void Painter::clearBuffer() {
     std::fill_n(pixels, bytes, 0);
 }
 
+void Painter::saveImage() {
+
+    QImage image(pixels, imgWidth(), imgHeight(), QImage::Format_RGBX8888);
+    QImage scaledImage = image.scaled(size);
+
+    const auto p1 = std::chrono::system_clock::now();
+ 
+    auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(p1.time_since_epoch()).count();
+
+    QString assetsPath("assets/images/");
+    scaledImage.save(assetsPath + "image_" + QString::number(timestamp) + ".png");
+
+}
+
 void Painter::clearPaintCallbacks() {
     paintCallbacks.clear();
 }
@@ -97,16 +113,12 @@ void Painter::floodFill(int x, int y, QColor color, QColor nColor) {
     QColor pixel = pixelAt(x, y);
     if(pixel == color) {
         setPixel(x, y, nColor);
+        // salvando a imagem
+        saveImage();
         floodFill(x + 1, y, color, nColor);
         floodFill(x - 1, y, color, nColor);
         floodFill(x, y - 1, color, nColor);
         floodFill(x, y + 1, color, nColor);
     }
     
-}
-
-void Painter::setScale(float scale) {
-    int _scale = scale > 0 ? scale : 1;
-    this->scale = _scale;
-    update();
 }

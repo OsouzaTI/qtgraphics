@@ -12,6 +12,7 @@
 #include <functional>
 #include <helpers/pixels.h>
 
+#include <chrono>
 #include <unistd.h>
 
 typedef struct {
@@ -27,7 +28,6 @@ typedef std::function<void(uchar* buffer, int width, int height)> PaintBufferCal
 class Painter : public QWidget
 {
     private:
-        int scale;
         int bytes;
         QSize size;         // tamanho da janela de visualizacao
         QSize imageSize;    // tamanho da imagem (influencia na quantidade de pixels)
@@ -47,11 +47,10 @@ class Painter : public QWidget
         void clearPaintBufferCallbacks();
         void clearPaintCallbacks();
 
+        void saveImage();
+
         inline int imgWidth() const { return imageSize.width(); };
         inline int imgHeight() const { return imageSize.height(); };
-
-        inline int getScale() { return scale; }
-        void setScale(float scale);
 };
 
 

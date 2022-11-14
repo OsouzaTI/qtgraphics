@@ -64,9 +64,6 @@ public:
     inline void updatePainter(){ this->painter->update(); }
 
 public slots:
-    void scaleIn();
-    void scaleOut();
-
     void floodFill();
 
 };

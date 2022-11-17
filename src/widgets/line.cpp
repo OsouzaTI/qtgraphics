@@ -109,6 +109,26 @@ void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int
 
 }
 
+void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color) {
+
+    // definindo as variações
+    int dx = abs(x1 - x0);
+    int dy = abs(y1 - y0);
+    int y = y1;
+    int p = 2*dy - dx;
+
+    for(int x = x0; x < x1; x++) {
+        Pixels::setPixel(pixels, x, y, width, color);
+        if(p >= 0) {
+            y++;
+            p = p - 2 * (dy - dx);
+        } else {
+            p += 2*dy;
+        }
+    }
+
+}
+
 void QTGELine::infoPoints() {
     for(Line l : lines) {
         std::cout << "A("<<l.x0<<","<<l.y0<<") " << "B("<<l.x1<<","<<l.y1<< ")" << std::endl;
@@ -137,6 +157,7 @@ void QTGELine::setAlgoritm(int algorithm) {
             {
                 case 0: {
                     // brenseham
+                    bresenham(pixels, width, x0, y0, x1, y1, QColor(255, 0, 0));
                 } break;            
                 case 1: {
                     // DDA

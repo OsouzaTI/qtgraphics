@@ -66,7 +66,10 @@ class QTGELine : public QWidget
          * de linhas
          * */
         void digitalDifferentialAnalyzer(uchar* pixels, int width,  int x0, int y0, int x1, int y1, QColor color);
-        // void rasterizar();
+        
+        // bresenham
+        void bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color);
+
         void setPainter(Painter* painter);
 
         void addLine(Line line);

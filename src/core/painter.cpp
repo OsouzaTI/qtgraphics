@@ -11,27 +11,41 @@ Painter::Painter(int width, int height, QWidget *parent)
     pixels = new uchar[bytes];
     // inicializando buffer
     clearBuffer();
+
 }
 
 void Painter::paintEvent(QPaintEvent* event) {
     
     if(!paintCallbacks.empty()) { 
 
-        for (int x = 0; x < imgWidth(); x++) {
-            for (int y = 0; y < imgHeight(); y++) {                
-                for(PaintCallback paintCallback : paintCallbacks) {
-                    QColor color = paintCallback(pixelAround(x, y), x, y);
-                    setPixel(x, y, color);
+        // lendo as chaves de objetos do mapa
+        for (const auto &objects : paintCallbacks)
+        {            
+            for (int x = 0; x < imgWidth(); x++) {
+                for (int y = 0; y < imgHeight(); y++) {  
+
+                    for(PaintCallback paintCallback : objects.second) {
+                        QColor color = paintCallback(pixelAround(x, y), x, y);
+                        setPixel(x, y, color);
+                    }
+
                 }
             }
         }
 
+
     } 
     
     if (!paintBufferCallbacks.empty()) {
-        for(PaintBufferCallback paintBufferCallback : paintBufferCallbacks) {
-            paintBufferCallback(pixels, imgWidth(), imgHeight());
+        
+        // lendo as chaves de objetos do mapa
+        for (const auto &objects : paintBufferCallbacks)
+        { 
+            for(PaintBufferCallback paintBufferCallback : objects.second) {
+                paintBufferCallback(pixels, imgWidth(), imgHeight());
+            }
         }
+
     }
 
     // cria a imagem
@@ -89,20 +103,36 @@ void Painter::saveImage() {
 
 }
 
-void Painter::clearPaintCallbacks() {
-    paintCallbacks.clear();
+void Painter::clearPaintCallbacks(ObjectType type) {
+    if(type == ObjectType::NONE) {
+        paintCallbacks.clear();
+    } else {
+        paintCallbacks[type].clear();
+    }
 }
 
-void Painter::clearPaintBufferCallbacks() {
-    paintBufferCallbacks.clear();
+void Painter::clearPaintBufferCallbacks(ObjectType type) {    
+    if(type == ObjectType::NONE) {
+        paintBufferCallbacks.clear();
+    } else {
+        paintBufferCallbacks[type].clear();
+    }
 }
 
-void Painter::addPaintCallback(PaintCallback pcb) {
-    paintCallbacks.push_back(pcb);
+void Painter::addPaintCallback(ObjectType type, PaintCallback pcb) {
+    paintCallbacks[type].push_back(pcb);
 }
 
-void Painter::addPaintBufferCallback(PaintBufferCallback pbc) {
-    paintBufferCallbacks.push_back(pbc);
+int Painter::sizeOfPaintCallbacks(ObjectType type) {
+    return paintCallbacks[type].size();
+}
+
+int Painter::sizeOfPaintBufferCallbacks(ObjectType type) {
+    return paintBufferCallbacks[type].size();
+}
+
+void Painter::addPaintBufferCallback(ObjectType type, PaintBufferCallback pbc) {    
+    paintBufferCallbacks[type].push_back(pbc);
 }
 
 void Painter::floodFill(int x, int y, QColor color, QColor nColor) {
@@ -114,7 +144,7 @@ void Painter::floodFill(int x, int y, QColor color, QColor nColor) {
     if(pixel == color) {
         setPixel(x, y, nColor);
         // salvando a imagem
-        saveImage();
+        // saveImage();
         floodFill(x + 1, y, color, nColor);
         floodFill(x - 1, y, color, nColor);
         floodFill(x, y - 1, color, nColor);

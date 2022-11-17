@@ -82,7 +82,7 @@ void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, i
 }
 
 void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color) {
-
+    std::cout << "Color: " << color.alpha() << std::endl; 
     // calculando os respectivos deltas
     int deltaX = (x1 - x0);
     int deltaY = (y1 - y0);
@@ -113,17 +113,17 @@ void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y
 
     // definindo as variações
     int dx = abs(x1 - x0);
-    int dy = abs(y1 - y0);
-    int y = y1;
+    int dy = abs(y1 - y0);    
+    int y = y0;
     int p = 2*dy - dx;
 
     for(int x = x0; x < x1; x++) {
         Pixels::setPixel(pixels, x, y, width, color);
         if(p >= 0) {
             y++;
-            p = p - 2 * (dy - dx);
+            p = p - 2*dy + 2*dx;
         } else {
-            p += 2*dy;
+            p = p + 2*dy;
         }
     }
 
@@ -143,7 +143,7 @@ void QTGELine::setAlgoritm(int algorithm) {
     // limpa a lista de callbacks do painter
     painter->clearPaintBufferCallbacks();
     // adiciona o novo algoritmo na lista
-    painter->addPaintBufferCallback([this, algorithm](uchar* pixels, int width, int height){
+    painter->addPaintBufferCallback(ObjectType::LINE, [this, algorithm](uchar* pixels, int width, int height){
         
         // cada linha adicionada no vetor de linhas
         for(Line l : lines) {
@@ -157,14 +157,14 @@ void QTGELine::setAlgoritm(int algorithm) {
             {
                 case 0: {
                     // brenseham
-                    bresenham(pixels, width, x0, y0, x1, y1, QColor(255, 0, 0));
+                    bresenham(pixels, width, x0, y0, x1, y1, QTGEWindow::colors[1]);
                 } break;            
                 case 1: {
                     // DDA
-                    digitalDifferentialAnalyzer(pixels, width, x0, y0, x1, y1, QColor(255, 0, 0));
+                    digitalDifferentialAnalyzer(pixels, width, x0, y0, x1, y1, QTGEWindow::colors[1]);
                 } break;
                 case 2: {  
-                    analitica(pixels, width, height, x0, y0, x1, y1, QColor(255, 0, 0));
+                    analitica(pixels, width, height, x0, y0, x1, y1, QTGEWindow::colors[1]);
                 } break;
                 default:{
                     // brenseham
@@ -195,10 +195,21 @@ void QTGELine::addLineGUI() {
     x1 = tx1->text().toInt();
     y1 = ty1->text().toInt();
     lines.push_back(Line(x0, y0, x1, y1));
+
+    // caso não tiver nenhum callback para pintar uma linha adicionada
+    if(painter->sizeOfPaintBufferCallbacks(ObjectType::LINE) == 0) {
+        setAlgoritm(algorithm);
+    }
+
     painter->update();
 }
 
 void QTGELine::clearLines() {
+    std::cout << "Limpando todos os callbacks" << std::endl;
     lines.clear();
+    // remove todos os callbacks
+    painter->clearPaintCallbacks(ObjectType::LINE);
+    painter->clearPaintBufferCallbacks(ObjectType::LINE);    
+    painter->clearBuffer();
     painter->update();
 }

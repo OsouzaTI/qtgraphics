@@ -16,6 +16,7 @@
 #include "rgb.h"
 
 class QTGELine;
+class QTGEPolygon;
 
 class QTGEWindow : public QWidget {
 

@@ -13,6 +13,10 @@
 #include <core/painter.h>
 #include <helpers/pixels.h>
 
+#include <core/window.h>
+
+class QTGEWindow;
+
 struct Line
 {
     int x0, y0, x1, y1;

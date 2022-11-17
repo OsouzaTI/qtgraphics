@@ -100,6 +100,6 @@ void QTGEWindow::floodFill() {
     int x = pixelSeedX->text().toInt();
     int y = pixelSeedY->text().toInt();
     std::cout << "Flood fill pixelSeed(" << x << "," << y << ")" << std::endl;
-    painter->floodFill(x, y, QColor(0, 0, 0), QColor(255, 0, 0));
+    painter->floodFill(x, y, QTGEWindow::colors[0], QTGEWindow::colors[1]);
     painter->update();
 }

@@ -25,10 +25,11 @@ typedef struct {
 typedef enum {
     NONE,
     LINE,
+    CIRCLE,
     POLYGON
 } ObjectType;
 
-static const ObjectType objectTypes[] = {LINE, POLYGON};
+static const ObjectType objectTypes[] = {LINE, CIRCLE, POLYGON};
 
 typedef std::function<QColor(PixelAround p, int x, int y)> PaintCallback;
 typedef std::function<void(uchar* buffer, int width, int height)> PaintBufferCallback;

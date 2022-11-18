@@ -7,7 +7,7 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
 {       
     setFixedSize(size);
 
-    // painter
+    // painter    
     painter = new Painter(640, 480);
 
     // componentes de tela
@@ -17,12 +17,18 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     polygon = new QTGEPolygon(line);
     polygon->setPainter(painter);
 
-    // layout
+    circle = new QTGECircle();
+    circle->setPainter(painter);
+    
+    // layout    
     layout = new QHBoxLayout(this);
     layout->setSpacing(0);
     layout->setMargin(0);
     
     hbPreenchimento = new QHBoxLayout();
+
+    paintLayout = new QHBoxLayout();   
+    paintLayout->setAlignment(Qt::AlignCenter);
 
     // vbox1
     vbox1 = new QVBoxLayout();
@@ -57,11 +63,13 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     hbPreenchimento->setMargin(10);
 
     // adicionando elementos
-    vbox1->addWidget(painter);
+    paintLayout->addWidget(painter);
+    vbox1->addLayout(paintLayout);
     vbox2->addWidget(selectBackgroundColor);
     vbox2->addWidget(selectPrimaryColor);
     vbox2->addWidget(line);
     vbox2->addLayout(hbPreenchimento);
+    vbox2->addWidget(circle);
     vbox2->addWidget(polygon);
 
 

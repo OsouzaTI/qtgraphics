@@ -8,15 +8,18 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QBoxLayout>
 #include <QLineEdit>
 #include <widgets/select_color_button.h>
 #include <widgets/line.h>
 #include <widgets/polygon.h>
+#include <widgets/circle.h>
 #include "painter.h"
 #include "rgb.h"
 
 class QTGELine;
 class QTGEPolygon;
+class QTGECircle;
 
 class QTGEWindow : public QWidget {
 
@@ -25,6 +28,7 @@ private:
 
     // layout dividido em duas partes lado a lado
     QHBoxLayout* layout;
+    QHBoxLayout* paintLayout;
 
     // algoritmos de preenchimento
     QHBoxLayout* hbPreenchimento;
@@ -49,6 +53,7 @@ private:
     // widgets
     QTGELine* line;
     QTGEPolygon* polygon;
+    QTGECircle* circle;
 
 
 public:

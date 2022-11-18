@@ -38,7 +38,7 @@ class QTGELine : public QWidget
         QPushButton* btClearLines;
         
         QLabel* lbAlgorithms;
-        QVBoxLayout* boxAlgoritms;
+        QHBoxLayout* boxAlgoritms;
         QRadioButton* algorithm0; // brenseham
         QRadioButton* algorithm1; // DDA
         QRadioButton* algorithm2; // analitico
@@ -82,7 +82,7 @@ class QTGELine : public QWidget
         void addLineGUI();
         void clearLines();
         // callbacks dos radiobuttons
-        inline void setBrenseham()  { setAlgoritm(0); };
+        inline void setBresenham()  { setAlgoritm(0); };
         inline void setDDA()        { setAlgoritm(1); };
         inline void setAnalytic()   { setAlgoritm(2); };
 

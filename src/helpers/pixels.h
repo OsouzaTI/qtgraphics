@@ -12,6 +12,7 @@ namespace Pixels {
      */
 
     static inline void setPixel(uchar* pixels, int x, int y, int width, QColor color) {
+        if(x < 0 || y < 0 || x > width) return;
         // calculo do indice do pixel
         int pixel = (x + y * width) * 4;
         pixels[pixel+0] = color.red();

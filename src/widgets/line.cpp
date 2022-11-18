@@ -8,46 +8,39 @@ QTGELine::QTGELine(QWidget* parent)
     btClearLines = new QPushButton("Clear lines");
     btFinish = new QPushButton("Rasterizar");
 
-    lpointA = new QLabel("Point A:");
-    lpointB = new QLabel("Point B:");
-
     lb0 = new QLabel("Rasterizar linha");
     tx0 = new QLineEdit();
     ty0 = new QLineEdit();
     tx1 = new QLineEdit();
     ty1 = new QLineEdit();
+    tx0->setPlaceholderText("x0");
+    ty0->setPlaceholderText("y0");
+    tx1->setPlaceholderText("x1");
+    ty1->setPlaceholderText("y1");
 
-    lbAlgorithms = new QLabel("Selecione o algoritmo");
-    boxAlgoritms = new QVBoxLayout();
+    boxAlgoritms = new QHBoxLayout();
     // radio buttons de algoritmos
     algorithm0 = new QRadioButton("Brenseham");
     algorithm0->setChecked(true);
     algorithm1 = new QRadioButton("DDA");
     algorithm2 = new QRadioButton("Analitico");
-    boxAlgoritms->addWidget(lbAlgorithms);
     boxAlgoritms->addWidget(algorithm0);
     boxAlgoritms->addWidget(algorithm1);
     boxAlgoritms->addWidget(algorithm2);
 
     // adicionando no grid
-    gridLayout->addWidget(lb0, 0, 0, 1, 3, Qt::AlignCenter);    
-    gridLayout->addWidget(lpointA, 1, 0);
-    gridLayout->addWidget(lpointB, 2, 0);
-
-    gridLayout->addWidget(tx0, 1, 1);
-    gridLayout->addWidget(ty0, 1, 2);
-
-    gridLayout->addWidget(tx1, 2, 1);
-    gridLayout->addWidget(ty1, 2, 2);
-
-    gridLayout->addLayout(boxAlgoritms, 3, 0, 1, 3, Qt::AlignCenter);
-
-    gridLayout->addWidget(btFinish,     4, 0, 1, 2);
-    gridLayout->addWidget(btClearLines, 4, 2);
+    gridLayout->addWidget(lb0, 0, 0, 1, 4, Qt::AlignCenter);    
+    gridLayout->addWidget(tx0, 1, 0);
+    gridLayout->addWidget(ty0, 1, 1);
+    gridLayout->addWidget(tx1, 1, 2);
+    gridLayout->addWidget(ty1, 1, 3);
+    gridLayout->addLayout(boxAlgoritms, 2, 0, 1, 4, Qt::AlignCenter);
+    gridLayout->addWidget(btFinish,     3, 0, 1, 2);
+    gridLayout->addWidget(btClearLines, 3, 2, 1, 2);
 
     connect(btFinish, &QPushButton::clicked, this, &QTGELine::addLineGUI);
     connect(btClearLines, &QPushButton::clicked, this, &QTGELine::clearLines);
-    connect(algorithm0, &QRadioButton::clicked, this, &QTGELine::setBrenseham);
+    connect(algorithm0, &QRadioButton::clicked, this, &QTGELine::setBresenham);
     connect(algorithm1, &QRadioButton::clicked, this, &QTGELine::setDDA);
     connect(algorithm2, &QRadioButton::clicked, this, &QTGELine::setAnalytic);
 
@@ -82,7 +75,7 @@ void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, i
 }
 
 void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color) {
-    std::cout << "Color: " << color.alpha() << std::endl; 
+    
     // calculando os respectivos deltas
     int deltaX = (x1 - x0);
     int deltaY = (y1 - y0);
@@ -141,7 +134,7 @@ void QTGELine::setAlgoritm(int algorithm) {
     this->algorithm = algorithm;
 
     // limpa a lista de callbacks do painter
-    painter->clearPaintBufferCallbacks();
+    painter->clearPaintBufferCallbacks(ObjectType::LINE);
     // adiciona o novo algoritmo na lista
     painter->addPaintBufferCallback(ObjectType::LINE, [this, algorithm](uchar* pixels, int width, int height){
         

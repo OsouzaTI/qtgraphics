@@ -43,6 +43,7 @@ class Painter : public QWidget
         std::map<ObjectType, std::vector<PaintCallback>> paintCallbacks;
         std::map<ObjectType, std::vector<PaintBufferCallback>> paintBufferCallbacks;
         uchar* pixels;
+        
     public:
         explicit Painter(int width, int height, QWidget *parent = 0);
         void paintEvent(QPaintEvent* event) override;

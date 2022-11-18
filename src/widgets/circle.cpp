@@ -60,7 +60,7 @@ void QTGECircle::circunferenciaBresenham(uchar* pixels, int width, int xc, int y
     // como r é inteiro então p = 1 - r;
     int p = 1 - r;
 
-    while(x != y) {
+    while(x <= y) {
         
         Pixels::setPixel(pixels, xc + x, yc + y, width, color);
         Pixels::setPixel(pixels, xc + x, yc - y, width, color);
@@ -73,7 +73,7 @@ void QTGECircle::circunferenciaBresenham(uchar* pixels, int width, int xc, int y
         Pixels::setPixel(pixels, xc - y, yc - x, width, color);
         Pixels::setPixel(pixels, xc - y, yc + x, width, color);
 
-        if(p >= 0) {
+        if(p > 0) {
             y--;
             p = p + 2*x - 2*y + 5;
             x++;
@@ -81,6 +81,33 @@ void QTGECircle::circunferenciaBresenham(uchar* pixels, int width, int xc, int y
             p = p + 2*x + 3;
             x++;
         }
+    }
+
+}
+
+std::pair<int, int> QTGECircle::auxiliarPreenchimentoVarredura(int cx, int cy,  int r, int y) {
+    // raio ao quadrado
+    int r2 = r * r;
+    // diferença entre y e o ycentral ao quadrado
+    int dy = (y - cy) * (y - cy);
+    
+    int x0 = cx - sqrt(r2 - dy);
+    int x1 = cx + sqrt(r2 - dy);
+    
+    return std::make_pair(x0 ,x1);
+
+}
+
+void QTGECircle::preenchimentoLinhaVarredura(uchar* pixels, int width, int cx, int cy, int r, QColor color) {    
+
+    for(int y = cy - r; y < cy + r; y++) {
+        
+        std::pair<int, int> auxiliar = auxiliarPreenchimentoVarredura(cx, cy, r, y);
+        for (int x = auxiliar.first; x < auxiliar.second; x++) 
+        {
+            Pixels::setPixel(pixels, x, y, width, color);
+        }   
+
     }
 
 }
@@ -104,7 +131,8 @@ void QTGECircle::setAlgoritm(int algorithm) {
             {
                 case 0: {
                     // parametrico
-                    parametrica(pixels, width, c.cx, c.cy, c.r, QTGEWindow::colors[1]);
+                    // parametrica(pixels, width, c.cx, c.cy, c.r, QTGEWindow::colors[1]);
+                    preenchimentoLinhaVarredura(pixels, width, c.cx, c.cy, c.r, QTGEWindow::colors[1]);
                 } break;            
                 case 1: {
                     // brenseham

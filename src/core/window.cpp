@@ -73,8 +73,8 @@ QTGEWindow::QTGEWindow(int width, int height, QWidget *parent)
     vbox2->addWidget(polygon);
 
 
-    QTGEWindow::colors[0].changeColor(0, 0, 0);
-    QTGEWindow::colors[1].changeColor(255, 255, 255);
+    QTGEWindow::colors[0].changeColor(255, 255, 255);
+    QTGEWindow::colors[1].changeColor(0, 0, 0);
 
     // conectando
     connect(btFloodFill, &QPushButton::clicked, this, &QTGEWindow::floodFill);

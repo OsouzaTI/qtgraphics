@@ -54,22 +54,6 @@ QTGELine::~QTGELine()
 
 void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, int x1, int y1, QColor color) {
     
-    // trocas para manter os pontos em ordem de menor para maior
-    int _x0 = x0 > x1 ? x1 : x0;
-    int _y0 = y0 > y1 ? y1 : y0;
-    int _x1 = x0 > x1 ? x0 : x1;
-    int _y1 = y0 > y1 ? y0 : y1;
-    
-    float m = (_y0 - _y1)/static_cast<float>(_x0 - _x1);
-    
-    for(int x = _x0; x < _x1; x++) {
-        for(int y = _y0; y < _y1; y++) {
-
-            bool equacao = (m * (_x0 - x) - _y0 + y) == 0;
-            if(equacao) Pixels::setPixel(pixels, x, y, width, color);
-
-        }
-    }
     
 
 }
@@ -103,23 +87,79 @@ void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int
 }
 
 void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color) {
-
+    
     // definindo as variações
     int dx = abs(x1 - x0);
     int dy = abs(y1 - y0);    
-    int y = y0;
-    int p = 2*dy - dx;
+    
+    int xIncremento = x0 < x1 ? 1 : -1;
+    int yIncremento = y0 < y1 ? 1 : -1;
 
-    for(int x = x0; x < x1; x++) {
+    // troca de valores
+    int y = y0;
+    int x = x0;
+   
+    // caso a variação em y seja maior que em x
+    if(dx < dy) {
+
         Pixels::setPixel(pixels, x, y, width, color);
-        if(p >= 0) {
-            y++;
-            p = p - 2*dy + 2*dx;
-        } else {
-            p = p + 2*dy;
+        int p = 2*dy - dx;
+
+        // percorre os valores de dx
+        for(int i = 0; i < dx; i++) {
+            x += xIncremento;
+
+            // procurando o proximo pixel
+            if(p < 0) {
+                p = p + 2*dy;
+            } else {
+                y += yIncremento;
+                p = p + 2*dy - 2*dx;
+            }
+
+            if(y1 < y0) {
+                Pixels::setPixel(pixels, x, -y, width, color);
+            } else {
+                Pixels::setPixel(pixels, x, y, width, color);
+            }
+
         }
+
+    } 
+    // caso a variação de x seja maior que a variação de y
+    else {
+
+        /***
+         * Sera realizada a troca de todos os 'x' por 'y'
+         * */
+
+        Pixels::setPixel(pixels, y, x, width, color);
+        int p = 2*dx - dy;
+
+        // percorre os valores de dx
+        for(int i = 0; i < dy; i++) {
+            y += yIncremento;
+
+            // procurando o proximo pixel
+            if(p < 0) {
+                p = p + 2*dx;
+            } else {
+                x += xIncremento;
+                p = p + 2*dx - 2*dy;
+            }
+
+ 
+            if(y1 < y0) {
+                Pixels::setPixel(pixels, -y, x, width, color);
+            } else {
+                Pixels::setPixel(pixels, y, x, width, color);
+            }
+            
+        }
+
     }
 
+    
 }
 
 void QTGELine::infoPoints() {

@@ -41,11 +41,19 @@ private:
 
     // algoritmo selecionado
     int algorithm = 0; // padrao: Parametrica
+
+    // auxiliar do preenchimento por linha de varredura
+    std::pair<int, int> auxiliarPreenchimentoVarredura(int cx, int cy,  int r, int y);
+
 public:
     QTGECircle(QWidget* parent = 0);
     void setAlgoritm(int algorithm);
     void parametrica(uchar* pixels, int width, int xc, int yc, int r, QColor color);
     void circunferenciaBresenham(uchar* pixels, int width, int xc, int yc, int r, QColor color);
+
+    
+    void preenchimentoLinhaVarredura(uchar* pixels, int width, int cx, int cy, int r, QColor color);
+
 public slots:
     void addCircle();
     void clearCircles();

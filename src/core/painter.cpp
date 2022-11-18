@@ -86,7 +86,7 @@ void Painter::setPixel(int x, int y, QColor color) {
 }
 
 void Painter::clearBuffer() {
-    std::fill_n(pixels, bytes, 0);
+    std::fill_n(pixels, bytes, 255);
 }
 
 void Painter::saveImage() {

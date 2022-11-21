@@ -52,45 +52,70 @@ QTGELine::~QTGELine()
 
 }
 
-void QTGELine::analitica(uchar* pixels, int width, int height, int x0, int y0, int x1, int y1, QColor color) {
-    
-    
+void QTGELine::analitica(uchar* pixels, int x0, int y0, int x1, int y1, QColor color) {
 
-}
-
-void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color) {
-    
-    // calculando os respectivos deltas
-    int deltaX = (x1 - x0);
-    int deltaY = (y1 - y0);
-
-    // obtendo o maior delta e salvando-o
-    int sideLength = (abs(deltaX) >= abs(deltaY)) ? abs(deltaX) : abs(deltaY);
-
-    // definindo a taxa de incremento dos eixos
-    float incrementX = deltaX / static_cast<float>(sideLength);
-    float incrementY = deltaY / static_cast<float>(sideLength);
-
-    // valor atual dos incrementos
-    float currentX = x0;
-    float currentY = y0;
-
-    for(int i = 0; i < sideLength; i++) {
-        int x = static_cast<int>(currentX);
-        int y = static_cast<int>(currentY);        
-        // definindo o pixel
-        Pixels::setPixel(pixels, x, y, width, color);        
-        currentX += incrementX;
-        currentY += incrementY;
+    if(x0 > x1 && y0 > y1) {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
     }
 
+    // verifica se a reta é vertical
+    if(x0 == x1) {
+
+        for (int y = y0; y < y1; y++)
+        {
+            Pixels::setPixel(pixels, x0, y, color);
+        }
+        
+
+    } else {
+
+        float m = (y1 - y0) / (float)(x1 - x0);
+        float b = y1 - m * x1;
+
+        for (int x = x0; x < x1; x++)
+        {
+            float y = m * x + b;                        
+            Pixels::setPixel(pixels, x, round(y), color);
+        }
+
+    }
+    
+
 }
 
-void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color) {
+void QTGELine::digitalDifferentialAnalyzer(uchar* pixels, int x0, int y0, int x1, int y1, QColor color) {
+    
+    // calculando os respectivos deltas
+    int deltaX = x1 - x0;
+    int deltaY = y1 - y0;
+
+    // escolhendo o maior delta para o calculo dos incrementos
+    int mdelta = abs(deltaX) > abs(deltaY) ? abs(deltaX) : abs(deltaY);
+
+    // calculando incrementos
+    float incx = deltaX / (float)mdelta;
+    float incy = deltaY / (float)mdelta;
+
+    float x = x0, y = y0;
+    for (int i = 0; i < mdelta; i++)
+    {
+ 
+        Pixels::setPixel(pixels, round(x), round(y), color);
+
+        x += incx;
+        y += incy;
+
+    }
+    
+    
+}
+
+void QTGELine::bresenham(uchar* pixels, int x0, int y0, int x1, int y1, QColor color) {
     
     // definindo as variações
-    int dx = abs(x1 - x0);
-    int dy = abs(y1 - y0);    
+    int dx = x1 - x0;
+    int dy = y1 - y0;    
     
     int xIncremento = x0 < x1 ? 1 : -1;
     int yIncremento = y0 < y1 ? 1 : -1;
@@ -102,7 +127,7 @@ void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y
     // caso a variação em y seja maior que em x
     if(dx < dy) {
 
-        Pixels::setPixel(pixels, x, y, width, color);
+        Pixels::setPixel(pixels, x, y, color);
         int p = 2*dy - dx;
 
         // percorre os valores de dx
@@ -118,9 +143,9 @@ void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y
             }
 
             if(y1 < y0) {
-                Pixels::setPixel(pixels, x, -y, width, color);
+                Pixels::setPixel(pixels, x, -y, color);
             } else {
-                Pixels::setPixel(pixels, x, y, width, color);
+                Pixels::setPixel(pixels, x, y, color);
             }
 
         }
@@ -133,7 +158,7 @@ void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y
          * Sera realizada a troca de todos os 'x' por 'y'
          * */
 
-        Pixels::setPixel(pixels, y, x, width, color);
+        Pixels::setPixel(pixels, y, x, color);
         int p = 2*dx - dy;
 
         // percorre os valores de dx
@@ -150,9 +175,9 @@ void QTGELine::bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y
 
  
             if(y1 < y0) {
-                Pixels::setPixel(pixels, -y, x, width, color);
+                Pixels::setPixel(pixels, -y, x, color);
             } else {
-                Pixels::setPixel(pixels, y, x, width, color);
+                Pixels::setPixel(pixels, y, x, color);
             }
             
         }
@@ -190,14 +215,14 @@ void QTGELine::setAlgoritm(int algorithm) {
             {
                 case 0: {
                     // brenseham
-                    bresenham(pixels, width, x0, y0, x1, y1, QTGEWindow::colors[1]);
+                    bresenham(pixels, x0, y0, x1, y1, QTGEWindow::colors[1]);
                 } break;            
                 case 1: {
                     // DDA
-                    digitalDifferentialAnalyzer(pixels, width, x0, y0, x1, y1, QTGEWindow::colors[1]);
+                    digitalDifferentialAnalyzer(pixels, x0, y0, x1, y1, QTGEWindow::colors[1]);
                 } break;
                 case 2: {  
-                    analitica(pixels, width, height, x0, y0, x1, y1, QTGEWindow::colors[1]);
+                    analitica(pixels, x0, y0, x1, y1, QTGEWindow::colors[1]);
                 } break;
                 default:{
                     // brenseham

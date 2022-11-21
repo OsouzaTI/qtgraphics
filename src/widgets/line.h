@@ -63,16 +63,16 @@ class QTGELine : public QWidget
     public:
         QTGELine(QWidget* parent = 0);
         ~QTGELine();
-        void analitica(uchar* pixels, int width, int height, int x0, int y0, int x1, int y1, QColor color);
+        void analitica(uchar* pixels, int x0, int y0, int x1, int y1, QColor color);
 
         /**
          * Função que ira executar o algoritmo DDA para rasterização
          * de linhas
          * */
-        void digitalDifferentialAnalyzer(uchar* pixels, int width,  int x0, int y0, int x1, int y1, QColor color);
+        void digitalDifferentialAnalyzer(uchar* pixels, int x0, int y0, int x1, int y1, QColor color);
         
         // bresenham
-        void bresenham(uchar* pixels, int width, int x0, int y0, int x1, int y1, QColor color);
+        void bresenham(uchar* pixels, int x0, int y0, int x1, int y1, QColor color);
 
         void setPainter(Painter* painter);
 

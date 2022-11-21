@@ -48,7 +48,7 @@ void QTGECircle::parametrica(uchar* pixels, int width, int xc, int yc, int r, QC
     for (int angle = 0; angle < 360; angle++) {
         int x = xc + r * cos((angle * M_PI)/180.0f);
         int y = yc + r * sin((angle * M_PI)/180.0f);
-        Pixels::setPixel(pixels, x, y, width, color);
+        Pixels::setPixel(pixels, x, y, color);
     }
 
 }
@@ -62,16 +62,16 @@ void QTGECircle::circunferenciaBresenham(uchar* pixels, int width, int xc, int y
 
     while(x <= y) {
         
-        Pixels::setPixel(pixels, xc + x, yc + y, width, color);
-        Pixels::setPixel(pixels, xc + x, yc - y, width, color);
-        Pixels::setPixel(pixels, xc - x, yc - y, width, color);
-        Pixels::setPixel(pixels, xc - x, yc + y, width, color);
+        Pixels::setPixel(pixels, xc + x, yc + y, color);
+        Pixels::setPixel(pixels, xc + x, yc - y, color);
+        Pixels::setPixel(pixels, xc - x, yc - y, color);
+        Pixels::setPixel(pixels, xc - x, yc + y, color);
 
         // usando a simetria para os demais quadrantes
-        Pixels::setPixel(pixels, xc + y, yc + x, width, color);
-        Pixels::setPixel(pixels, xc + y, yc - x, width, color);
-        Pixels::setPixel(pixels, xc - y, yc - x, width, color);
-        Pixels::setPixel(pixels, xc - y, yc + x, width, color);
+        Pixels::setPixel(pixels, xc + y, yc + x, color);
+        Pixels::setPixel(pixels, xc + y, yc - x, color);
+        Pixels::setPixel(pixels, xc - y, yc - x, color);
+        Pixels::setPixel(pixels, xc - y, yc + x, color);
 
         if(p > 0) {
             y--;
@@ -105,7 +105,7 @@ void QTGECircle::preenchimentoLinhaVarredura(uchar* pixels, int width, int cx, i
         std::pair<int, int> auxiliar = auxiliarPreenchimentoVarredura(cx, cy, r, y);
         for (int x = auxiliar.first; x < auxiliar.second; x++) 
         {
-            Pixels::setPixel(pixels, x, y, width, color);
+            Pixels::setPixel(pixels, x, y, color);
         }   
 
     }
